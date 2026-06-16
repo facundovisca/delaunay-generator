@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Delauney Generator - Matriz Interactiva</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+  </head>
+  <body>
+    <div id="app-container">
+      
+      <header id="main-header">
+        <h2>Delauney Generator</h2>
+        <p class="conceptual-text">
+          Un lienzo interactivo para co-crear arte geométrico inspirado en <strong>Sonia Delaunay</strong>. 
+          Usa el panel o toca el teclado para transformar la matriz en tiempo real: la tecla sola <strong>suma intensidad</strong> y con <strong>SHIFT restas</strong>.
+        </p>
+      </header>
+
+      <div id="main-content-layout">
+        <main id="canvas-holder"></main>
+
+        <aside id="gui-panel">
+          <h3>Pinceles Estructurales</h3>
+
+          <div class="control-group">
+            <label>1. Paleta Cromática</label>
+            <input type="range" id="htmlSliderPaleta" min="0" max="3" value="0" step="1" />
+          </div>
+
+          <div class="control-group">
+            <label>2. Estructura de Fondo</label>
+            <input type="range" id="htmlSliderFondo" min="0" max="3" value="0" step="1" />
+          </div>
+
+          <div class="control-group">
+            <label>3. Cantidad de núcleos</label>
+            <input type="range" id="htmlSliderCantidad" min="0" max="5" value="0" step="1" />
+          </div>
+
+          <div class="control-group">
+            <label>4. Escala General</label>
+            <input type="range" id="htmlSliderEscala" min="100" max="400" value="100" step="1" />
+          </div>
+
+          <div class="control-group">
+            <label>5. Figuras Intermedias</label>
+            <input type="range" id="htmlSliderSecundarias" min="0" max="6" step="1" value="0" />
+          </div>
+
+          <div class="control-group">
+            <label>6. Amplitud Sinusoide (S)</label>
+            <input type="range" id="htmlSliderSinusoide" min="0" max="100" value="0" step="1" />
+          </div>
+
+          <div class="control-group">
+            <label>7. Tramas de Fondo</label>
+            <input type="range" id="htmlSliderTramasFondo" min="0" max="35" step="any" value="0" />
+          </div>
+
+          <div class="control-group">
+            <label>8. Offset Eje (Asimetría)</label>
+            <input type="range" id="htmlSliderOffset" min="0" max="150" value="0" step="1" />
+          </div>
+
+          <div class="action-buttons-row">
+            <button id="btnGenerar">NUEVA OBRA</button>
+            <button id="btnDescargar" class="btn-outline">GUARDAR PNG</button>
+          </div>
+
+          <div id="palette-preview-block" style="display: none; margin-top: 25px">
+            <span id="palette-label" style="display: block; font-size: 11px; color: #888; letter-spacing: 0.5px; margin-bottom: 8px; text-transform: uppercase;">Paleta actual:</span>
+            <div id="palette-bar-container"></div>
+          </div>
+
+          <div id="keyboard-guide" style="margin-top: 25px; padding-top: 15px; border-top: 1px dashed #3a3a3a;">
+            <span style="display: block; font-size: 11px; color: #888; letter-spacing: 0.5px; margin-bottom: 10px; text-transform: uppercase;">Controles de Teclado:</span>
+            <ul style="list-style: none; font-size: 11px; color: #c4a85a; line-height: 1.6; text-transform: uppercase;">
+              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">A</strong> Paleta Cromática</li>
+              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">S</strong> Estructura de Fondo</li>
+              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">D</strong> Cantidad de Núcleos</li>
+              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">F</strong> Escala General</li>
+              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">G</strong> Figuras Intermedias</li>
+              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">H</strong> Amplitud Sinusoide</li>
+              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">J</strong> Tramas de Fondo</li>
+              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">K</strong> Offset Eje (Asimetría)</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+
+    </div>
+
+    <script src="familias.js"></script>
+    <script src="sketch.js"></script>
+  </body>
+</html>

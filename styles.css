@@ -1,0 +1,220 @@
+/* ==========================================================================
+   1. RESET GENERAL Y ESTILOS DE BASE
+   ========================================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #1a1a1a;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  color: #f0ede6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* ==========================================================================
+   2. ESTRUCTURA Y DIRECCIONAMIENTO DEL LAYOUT
+   ========================================================================== */
+#app-container {
+  display: flex;
+  flex-direction: column; /* Flujo vertical: cabecera arriba, contenido abajo */
+  align-items: center;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  background-color: #242424;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* Cabecera Superior Centrada */
+#main-header {
+  text-align: center;
+  width: 100%;
+  margin-bottom: 25px;
+}
+
+#main-header h2 {
+  font-size: 28px;
+  color: #ffffff;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+/* Texto Introductorio Conceptual */
+.conceptual-text {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #a0a0a0;
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+  letter-spacing: 0.2px;
+}
+
+.conceptual-text strong {
+  color: #c4a85a;
+  font-weight: 600;
+}
+
+/* Distribución en Fila para Lienzo + Controles */
+#main-content-layout {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 30px;
+  width: 100%;
+}
+
+/* Responsivo Adaptable para Pantallas Chicas o Celulares */
+@media (max-width: 1000px) {
+  #main-content-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* ==========================================================================
+   3. ELEMENTOS DEL LIENZO (P5.JS CANVAS RESPONSIVO)
+   ========================================================================== */
+#canvas-holder canvas {
+  border-radius: 6px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  display: block;
+  max-width: 100%; /* Permite achicarse en pantallas de menor resolución */
+  height: auto !important; 
+}
+
+/* ==========================================================================
+   4. PANEL DE CONTROL LATERAL (GUI)
+   ========================================================================== */
+#gui-panel {
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-color: #1c1c1c;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #333;
+}
+
+#gui-panel h3 {
+  font-size: 14px;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #222;
+  padding-bottom: 8px;
+}
+
+/* Grupo de Deslizadores */
+.control-group {
+  margin-bottom: 18px;
+}
+
+.control-group label {
+  display: block;
+  font-size: 11px;
+  color: #c4a85a;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Estilizado del Input Range (Sliders con botón rojo nativo de la obra) */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  background: #333;
+  height: 6px;
+  border-radius: 3px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fe3f2c;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   5. COMPONENTES: BOTONES DE ACCIÓN SIMÉTRICOS
+   ========================================================================== */
+.action-buttons-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 25px;
+  width: 100%;
+}
+
+.action-buttons-row button {
+  flex: 1;
+  padding: 12px 0;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+/* Botón Sólido: Nueva Obra */
+#btnGenerar {
+  background-color: #c4a85a;
+  color: #111;
+  border: none;
+}
+
+#btnGenerar:hover {
+  background-color: #e5c46e;
+}
+
+/* Botón Outline: Guardar PNG */
+.btn-outline {
+  background-color: transparent;
+  color: #ffffff;
+  border: 1px solid #444444;
+}
+
+.btn-outline:hover {
+  border-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* ==========================================================================
+   6. MUESTRA CROMÁTICA (PREVIEW DE PALETAS)
+   ========================================================================== */
+#palette-bar-container {
+  margin-top: 25px;
+  width: 100%;
+  height: 22px;
+  display: flex;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.color-swatch {
+  flex: 1;
+  height: 100%;
+  transition: background-color 0.2s ease;
+}
