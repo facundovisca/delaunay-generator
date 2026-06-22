@@ -16,41 +16,52 @@
       <header id="main-header">
         <h2>Delauney Generator</h2>
         <p class="conceptual-text">
-          Un lienzo interactivo para co-crear arte geométrico inspirado en <strong>Sonia Delaunay</strong>. 
-          Usa el panel o toca el teclado para transformar la matriz en tiempo real: la tecla sola <strong>suma intensidad</strong> y con <strong>SHIFT restas</strong>.
+          Un lienzo interactivo inspirado en <strong>Sonia Delaunay</strong>. 
+          Modulá de forma cíclica los parámetros con la intensidad de tu voz y usá palmas para viajar infinitamente por las capas.
         </p>
+        
+        <div id="estado-perfo" style="font-size: 13px; font-weight: bold; color: #c4a85a; letter-spacing: 1px; text-transform: uppercase; margin-top: 15px; background: #1c1c1c; padding: 6px 20px; border-radius: 20px; display: inline-block; border: 1px solid #333;">
+          Estado Actual: 1. Cantidad de núcleos
+        </div>
       </header>
 
       <div id="main-content-layout">
+        
         <main id="canvas-holder"></main>
 
         <aside id="gui-panel">
+          
+     <h3>Entorno Acústico</h3>
+<div class="control-group" style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #333;">
+  <label style="color: #c4a85a; font-weight: bold;">🎙️ Nivel de Entrada Micrófono</label>
+<input type="range" id="htmlSliderSensibilidad" min="1" max="20" step="1" value="14" /></div>
+
           <h3>Pinceles Estructurales</h3>
 
           <div class="control-group">
-            <label>1. Paleta Cromática</label>
-            <input type="range" id="htmlSliderPaleta" min="0" max="3" value="0" step="1" />
-          </div>
-
-          <div class="control-group">
-            <label>2. Estructura de Fondo</label>
-            <input type="range" id="htmlSliderFondo" min="0" max="3" value="0" step="1" />
-          </div>
-
-          <div class="control-group">
-            <label>3. Cantidad de núcleos</label>
+            <label>1. Cantidad de núcleos</label>
             <input type="range" id="htmlSliderCantidad" min="0" max="5" value="0" step="1" />
           </div>
 
           <div class="control-group">
-            <label>4. Escala General</label>
+            <label>2. Escala General</label>
             <input type="range" id="htmlSliderEscala" min="100" max="400" value="100" step="1" />
           </div>
 
           <div class="control-group">
-            <label>5. Figuras Intermedias</label>
+            <label>3. Figuras Intermedias</label>
             <input type="range" id="htmlSliderSecundarias" min="0" max="6" step="1" value="0" />
           </div>
+
+          <div class="control-group">
+            <label>4. Paleta Cromática</label>
+            <input type="range" id="htmlSliderPaleta" min="0" max="3" value="0" step="1" />
+          </div>
+
+<div class="control-group">
+  <label>5. Estructura de Fondo</label>
+  <input type="range" id="htmlSliderFondo" min="0" max="5" value="0" step="1" />
+</div>
 
           <div class="control-group">
             <label>6. Amplitud Sinusoide (S)</label>
@@ -59,7 +70,7 @@
 
           <div class="control-group">
             <label>7. Tramas de Fondo</label>
-            <input type="range" id="htmlSliderTramasFondo" min="0" max="35" step="any" value="0" />
+            <input type="range" id="htmlSliderTramasFondo" min="0" max="35" step="1" value="0" />
           </div>
 
           <div class="control-group">
@@ -78,16 +89,13 @@
           </div>
 
           <div id="keyboard-guide" style="margin-top: 25px; padding-top: 15px; border-top: 1px dashed #3a3a3a;">
-            <span style="display: block; font-size: 11px; color: #888; letter-spacing: 0.5px; margin-bottom: 10px; text-transform: uppercase;">Controles de Teclado:</span>
-            <ul style="list-style: none; font-size: 11px; color: #c4a85a; line-height: 1.6; text-transform: uppercase;">
-              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">A</strong> Paleta Cromática</li>
-              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">S</strong> Estructura de Fondo</li>
-              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">D</strong> Cantidad de Núcleos</li>
-              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">F</strong> Escala General</li>
-              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">G</strong> Figuras Intermedias</li>
-              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">H</strong> Amplitud Sinusoide</li>
-              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">J</strong> Tramas de Fondo</li>
-              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">K</strong> Offset Eje (Asimetría)</li>
+            <span style="display: block; font-size: 11px; color: #888; letter-spacing: 0.5px; margin-bottom: 10px; text-transform: uppercase;">Manual de Performance:</span>
+            <ul style="list-style: none; font-size: 11px; color: #c4a85a; line-height: 1.6; text-transform: uppercase; padding-left: 0;">
+              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">Intensidad Voz 🎙️</strong> Sube el slider activo. Al pasar el máximo, vuelve a nacer de 0</li>
+              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">Silencio 🛑</strong> Freno de mano instantáneo (Conserva el valor actual)</li>
+              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">Una Palma 👏</strong> Confirmar y avanzar paso (Suena ok.wav - Cíclico del 8 al 1)</li>
+              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">Doble Palma 👏👏</strong> Retroceder paso (Suena back.wav - Cíclico del 1 al 8)</li>
+              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">Espacio / B</strong> Navegación manual de emergencia por teclado</li>
             </ul>
           </div>
         </aside>
@@ -95,6 +103,7 @@
 
     </div>
 
+    <script src="gestor.js"></script>
     <script src="familias.js"></script>
     <script src="sketch.js"></script>
   </body>

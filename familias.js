@@ -111,28 +111,58 @@ class FamiliaAzar {
       this.renderEstructuraEspecifica(fondoSiguiente, alphaTransicion, colF1, colF2, yInicio, altoTotal, hExtra);
     }
   }
-
-  renderEstructuraEspecifica(tipo, alphaVal, colF1, colF2, yInicio, altoTotal, hExtra) {
-    if (tipo === 0) return; 
-    
+renderEstructuraEspecifica(tipo, alphaVal, colF1, colF2, yInicio, altoTotal, hExtra) {
     let c1 = color(colF1); c1.setAlpha(alphaVal);
     let c2 = color(colF2); c2.setAlpha(alphaVal);
 
-    if (tipo === 1) {
-      fill(c1); rect(0, yInicio, width, altoTotal);
-    } 
-    else if (tipo === 2) {
-      fill(c1); rect(0, yInicio, this.cx, altoTotal); 
-      fill(c2); rect(this.cx, yInicio, this.cx, altoTotal); 
-    } 
-    else if (tipo === 3) {
-      fill(c1); rect(0, yInicio, this.cx, this.ySplitL + hExtra); 
-      fill(c2); rect(0, this.ySplitL, this.cx, height - this.ySplitL + hExtra);
-      fill(c2); rect(this.cx, yInicio, this.cx, this.ySplitR + hExtra); 
-      fill(c1); rect(this.cx, this.ySplitR, this.cx, height - this.ySplitR + hExtra);
+    noStroke();
+
+    switch(tipo) {
+      case 0:
+        // 1. COLOR PLENO
+        break;
+
+      case 1:
+        // 2. BICOLOR ESTÁNDAR
+        fill(c1); rect(0, yInicio, this.cx, altoTotal); 
+        fill(c2); rect(this.cx, yInicio, this.cx, altoTotal); 
+        break;
+
+      case 2:
+        // 3. BICOLOR INVERTIDO
+        fill(c2); rect(0, yInicio, this.cx, altoTotal); 
+        fill(c1); rect(this.cx, yInicio, this.cx, altoTotal); 
+        break;
+
+      case 3:
+        // 4. CUADRANTES ESTÁNDAR
+        fill(c1); rect(0, yInicio, this.cx, this.ySplitL + hExtra); 
+        fill(c2); rect(0, this.ySplitL, this.cx, height - this.ySplitL + hExtra);
+        fill(c2); rect(this.cx, yInicio, this.cx, this.ySplitR + hExtra); 
+        fill(c1); rect(this.cx, this.ySplitR, this.cx, height - this.ySplitR + hExtra);
+        break;
+
+      case 4:
+        // 5. CUADRANTES COLOR INVERTIDO
+        fill(c2); rect(0, yInicio, this.cx, this.ySplitL + hExtra); 
+        fill(c1); rect(0, this.ySplitL, this.cx, height - this.ySplitL + hExtra);
+        fill(c1); rect(this.cx, yInicio, this.cx, this.ySplitR + hExtra); 
+        fill(c2); rect(this.cx, this.ySplitR, this.cx, height - this.ySplitR + hExtra);
+        break;
+
+      case 5:
+        // 6. 🔥 CUADRANTES CON CAMBIO DE TAMAÑO (Desplazamiento asimétrico)
+        // Generamos nuevas alturas modificando los cortes originales para alterar el tamaño de los bloques
+        let yDesplazadoL = this.ySplitL * 0.65; // Achicamos el cuadrante superior izquierdo
+        let yDesplazadoR = this.ySplitR * 1.25; // Agrandamos el cuadrante superior derecho
+        
+        fill(c1); rect(0, yInicio, this.cx, yDesplazadoL + hExtra); 
+        fill(c2); rect(0, yDesplazadoL, this.cx, height - yDesplazadoL + hExtra);
+        fill(c2); rect(this.cx, yInicio, this.cx, yDesplazadoR + hExtra); 
+        fill(c1); rect(this.cx, yDesplazadoR, this.cx, height - yDesplazadoR + hExtra);
+        break;
     }
   }
-
   renderMasaSemicirculo(lado, y, d, colHex, alphaVal = 255, flip = 1) {
     let c = color(colHex);
     c.setAlpha(alphaVal); 
@@ -180,7 +210,7 @@ class FamiliaAzar {
     }
   }
 
-  dibujar(idxPaleta, valFondoAnimado, cantNodosFisicos, cantNodosAnimada, valEscala, valD2Animada, valTramasAnimada, valSinusoide) {
+dibujar(idxPaleta, valFondoAnimado, cantNodosFisicos, cantNodosAnimada, valEscala, valD2Animada, valTramasAnimada, valSinusoide) {
     let palElegida = this.paletas[idxPaleta]; 
     let acentos = palElegida.acentos;
     
@@ -197,8 +227,40 @@ class FamiliaAzar {
     }
     if (opcionesLibres.length < 2) opcionesLibres = palElegida.fondos;
 
+    // ----------------------------------------------------------------------
+    // CONTROL DE CONTRASTE QUIRÚRGICO (EVITA CAMUFLAJE CON LA FIGURA)
+    // ----------------------------------------------------------------------
     let fondoColor1 = opcionesLibres[0];
     let fondoColor2 = opcionesLibres[1 % opcionesLibres.length];
+
+    if (palElegida.id === "F3") {
+      // Color 1 natural: El arena/crema de la paleta
+      fondoColor1 = palElegida.fondos[0]; 
+      
+      // Color 2: Forzamos el verde oliva lavado (#6a7442). 
+      // Si el centro del primer nodo ya usa ese verde, saltamos al verde seco alternativo (#7a8652).
+      let verdeElegido = palElegida.fondos[3]; 
+      if (this.poolNodos[0] && acentos[this.poolNodos[0].idxCentro % acentos.length] === verdeElegido) {
+        verdeElegido = palElegida.fondos[4]; 
+      }
+      fondoColor2 = verdeElegido;
+    } 
+else if (palElegida.id === "F4") {
+      // Color 1 natural: El claro hueso original de la paleta
+      fondoColor1 = palElegida.fondos[0];
+      
+      // Color 2: Forzamos un negro carbón/grafito profundo.
+      // Al ser un valor ultra oscuro, los azules de la figura recortan por brillo.
+      fondoColor2 = "#16191e"; 
+      
+      // Control de camuflaje: si el primer nodo justo tuviera negro en su anillo exterior,
+      // pasamos a un gris topo oscuro para mantener el despegue.
+      if (this.poolNodos[0] && acentos[this.poolNodos[0].idxPrincipal % acentos.length] === "#111111") {
+        fondoColor2 = "#252930"; 
+      }
+    }
+    // ----------------------------------------------------------------------
+
     let factorEscalaSlider = map(valEscala, 100, 400, 1, 1.15);
 
     this.dibujarFondo(valFondoAnimado, fondoColor1, fondoColor2); 
@@ -264,8 +326,6 @@ class FamiliaAzar {
       let expMorfologico = map(n.genAnilloF2, 0, 1, 1.4, 2.5);
 
       let maxCapasSecundarias = ceil(valD2Animada);
-
-      // Grosor base referencial para los modos calados
       let grosorBaseAnilloMasa = n.d1 * 0.15;
 
       if (n.genRemix1_4 > 0.70) { 
@@ -353,18 +413,13 @@ class FamiliaAzar {
         let colL = acentos[(n.idxPrincipal + j) % acentos.length];
         let colR = acentos[(n.idxSecundario + j) % acentos.length];
         
-        // ¡CÁLCULO DINÁMICO RECALIBRADO!
-        // Leemos el factor aleatorio asignado de nuestro pool para esta capa en particular (j)
         let configVariacion = this.disenoFigurasIntermedias[j % this.disenoFigurasIntermedias.length];
         
         if (esCalado) {
-          // Multiplicamos el espesor de la línea por el gen aleatorio de la instancia
           let grosorModificado = (grosorBase * 0.4) * configVariacion.grosorFactor;
           this.renderAnilloCalado("L", n.y, nudoDiam, grosorModificado, colL, alphaSecundaria); 
           this.renderAnilloCalado("R", n.y, nudoDiam, grosorModificado, colR, alphaSecundaria); 
         } else {
-          // Si es modo masa (semicírculo relleno), el grosor factor de la instancia altera
-          // sutilmente el diámetro de colapso, rompiendo los escalones matemáticos fijos
           let nudoDiamModificado = nudoDiam * (0.85 + (configVariacion.grosorFactor * 0.25));
           nudoDiamModificado = constrain(nudoDiamModificado, diametroD3, dBaseProgreso);
           this.renderMasaSemicirculo("L", n.y, nudoDiamModificado, colR, alphaSecundaria); 
