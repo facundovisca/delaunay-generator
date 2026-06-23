@@ -1,5 +1,3 @@
-==========================================================================
-
 // ARCHIVO: sketch.js
 
 // VERSIÓN INTERACTIVA PRO: MOTOR ACÚSTICO ROBUSTO MULTI-DISPOSITIVO
