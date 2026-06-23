@@ -157,20 +157,28 @@ function draw() {
     if (sOffset) valoresPerformaticos.offset = float(sOffset.value());
   }
 
-  // --- ESCALADO DE SENSIVILIDAD EN VIVO (INTUITIVO INVERTIDO) ---
+// --- ESCALADO DE SENSIVILIDAD EN VIVO (MÁS AGRESIVO PARA CELULARES) ---
   if (sSensibilidad) {
     let valorSlider = float(sSensibilidad.value());
-    AMP_MAX = map(valorSlider, 1, 20, 0.20, 0.01);
+    // Antes el tope era 0.01 (mucha exigencia). Ahora si lo subís al mango (20), 
+    // el umbral máximo de escala baja a 0.004, haciendo que el sistema sea ULTRA sensible.
+    AMP_MAX = map(valorSlider, 1, 20, 0.20, 0.004);
     gestorAmp.maximo = AMP_MAX; 
   }
 
-  // --- MOTOR ACÚSTICO NATIVO CON AMORTIGUACIÓN ANTI-PICOS ---
+// --- MOTOR ACÚSTICO NATIVO CON AMORTIGUACIÓN ANTI-PICOS ---
   amp = mic.getLevel();
   gestorAmp.actualizar(amp);
   
-  // 🔥 ESTRATEGIA MULTIDISPOSITIVO: Suavizamos la entrada brusca de hardware genérico
-  intensidad = gestorAmp.filtrada; 
-  intensidadSuaveAudio = lerp(intensidadSuaveAudio, intensidad, 0.15); 
+  // 🔥 BOOST DE ENTRADA: Si el slider de sensibilidad está alto (más de 15),
+  // le duplicamos la fuerza a la intensidad para compensar el mic del celu.
+  let entradaBruta = gestorAmp.filtrada;
+  if (sSensibilidad && float(sSensibilidad.value()) > 15) {
+    entradaBruta = constrain(entradaBruta * 2.0, 0, 1); // Multiplica x2 la señal si hace falta
+  }
+
+  intensidad = entradaBruta; 
+  intensidadSuaveAudio = lerp(intensidadSuaveAudio, intensidad, 0.15);
 
   haySonido = intensidad > umbralRuido;
   empezoElSonido = haySonido && !antesHabiaSonido;
