@@ -300,21 +300,28 @@ else if (palElegida.id === "F4") {
         });
       }
     }
-
-    let fPuenteProporcional = map(valSinusoide, 0, 100, 0, diametroD1 * 0.75); 
+// --- LÓGICA CORREGIDA: S EXTERIOR PEGADA AL CONTORNO DE LOS CÍRCULOS GRANDES ---
+    let fPuenteProporcional = map(valSinusoide, 0, 100, 0, diametroD1 * 0.8); 
     if (fPuenteProporcional > 0) {
       nodosActivos.forEach((n, idx) => {
         if (idx < nodosActivos.length - 1) {
           let nodoSiguiente = nodosActivos[idx + 1];
-          let factorExpansion = map(valSinusoide, 0, 100, 1.15, 1.65);
-          let dPuenteA = n.d1 * factorExpansion + fPuenteProporcional; 
-          let dPuenteB = nodoSiguiente.d1 * factorExpansion + fPuenteProporcional;
+          
+          let diametroExteriorBase = n.d1;       // El borde exterior del círculo grande
+          let grosorLinea = fPuenteProporcional; // El espesor que se expande con tu voz
+          
+          // Compensamos el trazo en p5 para que el borde interno bese el borde del círculo grande:
+          // Le sumamos el grosor al diámetro de base. Así crece puramente hacia afuera.
+          let dPuenteA = diametroExteriorBase + grosorLinea;
+          let dPuenteB = nodoSiguiente.d1 + grosorLinea;
+          
           let colPuenteL = n.colorPrincipal;          
           let colPuenteR = nodoSiguiente.colorSecundario; 
           let alphaPuente = (n.alpha + nodoSiguiente.alpha) / 2;
 
-          this.renderAnilloCalado(n.lado, n.y, dPuenteA, fPuenteProporcional, colPuenteL, alphaPuente);
-          this.renderAnilloCalado(nodoSiguiente.lado, nodoSiguiente.y, dPuenteB, fPuenteProporcional, colPuenteR, alphaPuente);
+          // Mantenemos tus arcos cruzados originales para armar la ondulación de tu dibujo
+          this.renderAnilloCalado(n.lado, n.y, dPuenteA, grosorLinea, colPuenteL, alphaPuente);
+          this.renderAnilloCalado(nodoSiguiente.lado, nodoSiguiente.y, dPuenteB, grosorLinea, colPuenteR, alphaPuente);
         }
       });
     }
