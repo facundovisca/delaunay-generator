@@ -35,8 +35,8 @@ let sPaleta, sFondo, sCantidad, sEscala, sSecundarias, sTramasFondo, sSinusoide,
 let AMP_MIN = 0.002;  // Piso de ruido mínimo
 let AMP_MAX = 0.08;   // Valor inicial (Se sobreescribe dinámicamente con el slider HTML)
 
-let umbralRuido = 0.12;         // CALIBRADO: Filtra ruidos chicos y el habla normal
-let umbralDuracionSonido = 1000; // CALIBRADO: Evita falsos positivos dándole más colchón a la voz
+let umbralRuido = 0.18;         // CALIBRADO: Filtra ruidos chicos y el habla normal
+let umbralDuracionSonido = 880; // CALIBRADO: Evita falsos positivos dándole más colchón a la voz
 
 let mic; // Instancia global requerida por la cátedra
 let audioIniciado = false;
