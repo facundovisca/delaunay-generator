@@ -284,7 +284,7 @@ class FamiliaAzar {
   // Dibuja la trama de anillos concéntricos del fondo
   dibujarTramasTraseras(valTramasAnimada, acentos, fEscala) {
     if (valTramasAnimada <= 0) return;
-    let dActual = 1300 * fEscala;
+    let dActual = 850 * fEscala;
     let totalAProcesar = ceil(valTramasAnimada);
 
     for (let i = 0; i < totalAProcesar; i++) {

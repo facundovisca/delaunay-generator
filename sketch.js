@@ -3,7 +3,7 @@ let texturas = [];
 let texturaElegida; // Guarda la textura fija seleccionada al azar
 
 // Audios para el feedback de la interfaz
-let sndOk, sndBack;
+let sndOk, sndBack, sndSave; // 🔥 CAMBIO: Agregamos sndSave para el sonido de guardado
 
 // Variables para transiciones (animación)
 let cantidadSuave = 0;
@@ -37,10 +37,10 @@ let sPaleta,
 
 // Configuración y calibración de audio
 let AMP_MIN = 0.04; // Piso para aislar estática y ruido de fondo
-let AMP_MAX = 0.15; // Techo dinámico (ganancia)
-let umbralRuido = 0.08; // Umbral de corte base
-let umbralDuracionSonido = 500; // Tiempo mínimo para considerar sonido continuo
-let ventanaDoblePalma = 450; // Margen de tiempo para detectar la doble palma
+let AMP_MAX = 0.28; // Para atenuar micrófonos muy sensibles
+let umbralRuido = 0.16; // Umbral de corte base
+let umbralDuracionSonido = 400; // Tiempo mínimo para considerar sonido continuo
+let ventanaDoblePalma = 400; // Margen de tiempo para detectar la doble palma
 
 let mic;
 let audioIniciado = false;
@@ -80,7 +80,7 @@ const textosInstrucciones = [
   "Usá tu voz para elegir la configuración del fondo en color pleno, mitades, cuadrantes, o bloques asimétricos. Da una palma para pasar al siguiente paso, o dos palmas para volver a la paleta.",
   "Emití un sonido sostenido para generar una figura en forma de 'S' por fuera de los núcleos. Una palma pasa a las tramas; dos regresan.",
   "Sostené el sonido para hacer agregar un sistema anillos en el fondo de la obra. Una palma avanza al paso final, y dosvuelven al paso anterior.",
-  "Emití sonido para para desplazar verticalmente las dos mitades del lienzo, quebrando la simetría perfecta de la pieza. Una palma vuelve al inicio; dos palmas vuelven a las tramas.",
+  "Emití sonido para para desplazar verticalmente las dos mitades del lienzo, quebrando la simetrya perfecta de la pieza. Una palma vuelve al inicio; dos palmas vuelven a las tramas.",
 ];
 
 let flagFeedback = 0; // Duración del pestañeo blanco al cambiar de paso
@@ -95,16 +95,15 @@ let flagGatillarCaptura = false;
 // PRELOAD & SETUP
 // ==========================================================================
 
-// Carga de texturas y sonidos antes de arrancar
 function preload() {
   for (let i = 1; i <= 6; i++) {
     texturas.push(loadImage("img/textura" + i + ".png"));
   }
   sndOk = loadSound("sound/ok.wav");
   sndBack = loadSound("sound/back.wav");
+  sndSave = loadSound("sound/save.wav"); // 🔥 CAMBIO: Cargamos el archivo save.wav
 }
 
-// Configuración inicial de p5.js e interfaz
 function setup() {
   let canvas = createCanvas(600, 800);
   canvas.parent("canvas-holder");
@@ -116,6 +115,7 @@ function setup() {
   sEscala = select("#htmlSliderEscala");
   sSecundarias = select("#htmlSliderSecundarias");
   sTramasFondo = select("#htmlSliderTramasFondo");
+  sSinusoide = select("#htmlSliderSinusoide"); 
   sOffset = select("#htmlSliderOffset");
   sSensibilidad = select("#htmlSliderSensibilidad");
   sUmbral = select("#htmlSliderUmbral");
@@ -123,7 +123,7 @@ function setup() {
   // Iniciamos el micrófono y el gestor de señal
   mic = new p5.AudioIn();
   gestorAmp = new GestorSenial(AMP_MIN, AMP_MAX);
-  gestorAmp.f = 0.95;
+  gestorAmp.f = 0.88;
 
   // Eventos de los botones de la interfaz
   let btnG = document.getElementById("btnGenerar");
@@ -157,7 +157,6 @@ function draw() {
   let paletaIndex = valoresPerformaticos.paleta;
   let pCorte = constrain(floor(paletaIndex), 0, 3);
 
-  // Pintamos el fondo según la paleta activa
   if (obra && obra.paletas && obra.paletas[pCorte]) {
     let coloresPaleta = obra.paletas[pCorte];
     background(coloresPaleta.fondos[0]);
@@ -165,13 +164,11 @@ function draw() {
     background(255);
   }
 
-  // Si no se activó el mic, la pantalla queda oscura y frena acá
   if (!audioIniciado) {
     background(20);
     return;
   }
 
-  // Si no estás cantando/hablando fuerte, lee los valores manuales de los sliders
   let esVozLarga = durSonido >= umbralDuracionSonido;
   if (!esVozLarga) {
     if (sPaleta) valoresPerformaticos.paleta = float(sPaleta.value());
@@ -185,26 +182,22 @@ function draw() {
     if (sOffset) valoresPerformaticos.offset = float(sOffset.value());
   }
 
-  // Mapeamos el slider de sensibilidad a los límites del gestor
   if (sSensibilidad) {
     let valorSlider = float(sSensibilidad.value());
     AMP_MAX = map(valorSlider, 1, 20, 0.35, 0.03);
     gestorAmp.maximo = AMP_MAX;
   }
 
-  // Actualizamos el filtro de ruido ambiente desde el slider
   if (sUmbral) {
     umbralRuido = float(sUmbral.value());
   }
 
-  // Procesamos la amplitud del micrófono
   amp = mic.getLevel();
   gestorAmp.actualizar(amp);
 
   intensidad = gestorAmp.filtrada;
   intensidadSuaveAudio = lerp(intensidadSuaveAudio, intensidad, 0.04);
 
-  // Detección de inicio y fin del sonido
   let antesHabiaSonido_local = haySonido;
   haySonido = intensidad > umbralRuido;
   empezoElSonido = haySonido && !antesHabiaSonido_local;
@@ -215,12 +208,11 @@ function draw() {
   }
 
   if (haySonido) {
-    marcaInicioSilencio = millis(); // Resetea el reloj de inactividad porque hay ruido
+    marcaInicioSilencio = millis();
     yaSeGuardoPorSilencio = false;
 
     durSonido = millis() - marcaInicioSonido;
 
-    // Si el sonido es largo, modula el slider del paso actual usando la voz
     if (durSonido >= umbralDuracionSonido) {
       modularVolumenCircular(intensidadSuaveAudio);
 
@@ -242,7 +234,6 @@ function draw() {
         sOffset.value(floor(valoresPerformaticos.offset));
     }
   } else {
-    // Evalúa si hay 10 segundos de silencio, y guarda captura en PNG
     let tiempoEnSilencio = millis() - marcaInicioSilencio;
     if (
       tiempoEnSilencio >= 10000 &&
@@ -254,7 +245,6 @@ function draw() {
     }
   }
 
-  // Cuando corta el sonido, evalúa si fue una palma simple o doble palma
   if (terminoElSonido) {
     let duracionFinalTramo = millis() - marcaInicioSonido;
 
@@ -271,13 +261,12 @@ function draw() {
     durSonido = 0;
   }
 
-  // Aplicamos la interpolación lerp para las animaciones
   let fondoValor = valoresPerformaticos.fondo;
   let cantidadValor = valoresPerformaticos.cantidad;
   let sinusoideValor = valoresPerformaticos.sinusoide;
   let offsetValor = valoresPerformaticos.offset;
 
-  cantidadSuave = lerp(cantidadSuave, cantidadValor, 0.15);
+  cantidadSuave = lerp(cantidadSuave, cantidadValor, 0.35);
   secundariasSuave = lerp(
     secundariasSuave,
     valoresPerformaticos.secundarias,
@@ -286,9 +275,7 @@ function draw() {
   fondoSuave = lerp(fondoSuave, fondoValor, 0.25);
   tramasSuave = lerp(tramasSuave, valoresPerformaticos.tramas, 0.04);
 
-  // Renderizado partido en dos mitades con desfase asimétrico
   if (obra) {
-    // Mitad izquierda (desplazamiento hacia arriba)
     push();
     beginClip();
     rect(0, 0, width / 2, height);
@@ -306,7 +293,6 @@ function draw() {
     );
     pop();
 
-    // Mitad derecha (desplazamiento hacia abajo)
     push();
     beginClip();
     rect(width / 2, 0, width / 2, height);
@@ -324,7 +310,6 @@ function draw() {
     );
     pop();
 
-    // Muestra los cuadraditos de colores de la paleta actual en el HTML
     let palElegida = obra.paletas[pCorte];
     let bloquePreview = select("#palette-preview-block");
     let contenedorBarra = select("#palette-bar-container");
@@ -345,7 +330,6 @@ function draw() {
     }
   }
 
-  // Superpone la textura analógica por multiplicación
   if (
     texturaElegida &&
     (floor(fondoValor) > 0 ||
@@ -359,7 +343,6 @@ function draw() {
     blendMode(BLEND);
   }
 
-  // Muestra el flash blanco de feedback al cambiar de paso
   if (flagFeedback > 0) {
     push();
     fill(255, 255, 255, 140);
@@ -369,13 +352,16 @@ function draw() {
     flagFeedback--;
   }
 
-  // Dibuja el panel de datos en el canvas
   if (!exportandoPNG) {
     dibujarMonitorDatos();
   }
 
-  // Captura y descarga el lienzo en PNG limpio
   if (flagGatillarCaptura) {
+    // 🔥 CAMBIO: Disparamos el sonido save.wav al confirmar la exportación
+    if (sndSave && sndSave.isLoaded()) {
+      sndSave.play();
+    }
+
     let timestamp =
       year() +
       nf(month(), 2) +
@@ -394,14 +380,13 @@ function draw() {
 // FUNCIONES AUXILIARES
 // ==========================================================================
 
-// Hace girar el slider activo de forma toroidal según el volumen de la voz
 function modularVolumenCircular(intensidadFiltrada) {
   let factorEmpuje = intensidadFiltrada * 0.15;
 
   switch (pasoActual) {
     case 1:
       valoresPerformaticos.cantidad =
-        (valoresPerformaticos.cantidad + factorEmpuje * 0.3) % 6;
+        (valoresPerformaticos.cantidad + factorEmpuje * 0.4) % 6;
       break;
     case 2:
       let rangoEscala = 300;
@@ -412,11 +397,11 @@ function modularVolumenCircular(intensidadFiltrada) {
       break;
     case 3:
       valoresPerformaticos.secundarias =
-        (valoresPerformaticos.secundarias + factorEmpuje * 0.6) % 7;
+        (valoresPerformaticos.secundarias + factorEmpuje * 0.4) % 7;
       break;
     case 4:
       valoresPerformaticos.paleta =
-        (valoresPerformaticos.paleta + factorEmpuje * 0.4) % 4;
+        (valoresPerformaticos.paleta + factorEmpuje * 0.2) % 4;
       break;
     case 5:
       valoresPerformaticos.fondo =
@@ -428,16 +413,15 @@ function modularVolumenCircular(intensidadFiltrada) {
       break;
     case 7:
       valoresPerformaticos.tramas =
-        (valoresPerformaticos.tramas + factorEmpuje * 3) % 36;
+        (valoresPerformaticos.tramas + factorEmpuje * 0.5) % 36;
       break;
     case 8:
       valoresPerformaticos.offset =
-        (valoresPerformaticos.offset + factorEmpuje * 12) % 151;
+        (valoresPerformaticos.offset + factorEmpuje * 5) % 151;
       break;
   }
 }
 
-// Avanza al siguiente estado y reproduce sonido de confirmación
 function avanzarPasoCircular() {
   pasoActual++;
   if (pasoActual > TOTAL_PASOS) pasoActual = 1;
@@ -446,7 +430,6 @@ function avanzarPasoCircular() {
   flagFeedback = 5;
 }
 
-// Retrocede al estado anterior y reproduce sonido inverso
 function retrocederPasoCircular() {
   pasoActual--;
   pasoActual--;
@@ -456,7 +439,6 @@ function retrocederPasoCircular() {
   flagFeedback = 5;
 }
 
-// Actualiza los textos del HTML con los strings del paso activo
 function actualizarCartelInterfaz() {
   let cartel = select("#estado-perfo");
   if (cartel) cartel.html("Estado Actual: " + nombresEstados[pasoActual - 1]);
@@ -466,7 +448,6 @@ function actualizarCartelInterfaz() {
     parrafoInstruccion.html(textosInstrucciones[pasoActual - 1]);
 }
 
-// Resetea todas las variables del lienzo a cero para iniciar una nueva pieza
 function generarNuevaObra() {
   valoresPerformaticos = {
     paleta: 0,
@@ -504,13 +485,11 @@ function generarNuevaObra() {
   obra = new FamiliaAzar();
 }
 
-// Oculta el monitor técnico y habilita la bandera de exportación
 function prepararCapturaLimpia() {
   exportandoPNG = true;
   flagGatillarCaptura = true;
 }
 
-// Inicializa el micrófono rompiendo las restricciones del navegador
 async function iniciarEntornoAudio() {
   if (audioIniciado) return;
   try {
@@ -523,14 +502,12 @@ async function iniciarEntornoAudio() {
   }
 }
 
-// Mapeo de navegación manual por teclado
 function keyPressed() {
   if (key === " ") avanzarPasoCircular();
   else if (key.toLowerCase() === "b") retrocederPasoCircular();
   else if (key.toLowerCase() === "r") generarNuevaObra();
 }
 
-// Dibuja el vúmetro y estado técnico en la esquina superior izquierda del canvas
 function dibujarMonitorDatos() {
   push();
   fill(15, 15, 15, 235);
@@ -568,13 +545,11 @@ function dibujarMonitorDatos() {
 
   text("MODE: " + msgModo, 25, 56);
 
-  // Renderizado físico del vúmetro verde
   fill(50);
   rect(135, 23, 75, 5);
   fill(0, 255, 0);
   rect(135, 23, map(intensidad, 0, 0.4, 0, 75, true), 5);
 
-  // Línea roja indicadora del umbral de ruido
   stroke(255, 0, 0);
   let posLineaRoja = map(umbralRuido, 0, 0.4, 0, 75, true);
   line(135 + posLineaRoja, 21, 135 + posLineaRoja, 29);
