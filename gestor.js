@@ -1,6 +1,6 @@
 // ==========================================================================
 // ARCHIVO: gestor.js
-// CLASE GESTOR DE SEÑAL - PROCESAMIENTO Y FILTRADO ACÚSTICO NATIVO
+// CLASE GESTOR DE SEÑAL - PROCESAMIENTO Y FILTRADO ACÚSTICO
 // ==========================================================================
 
 let altoGestor = 100;
@@ -8,9 +8,7 @@ let anchoGestor = 400;
 
 class GestorSenial {
 
-  // Corrección de los parámetros del constructor para JS nativo
   constructor(minimo_, maximo_) {
-
     this.minimo = minimo_;
     this.maximo = maximo_;
 
@@ -30,24 +28,22 @@ class GestorSenial {
   }
 
   actualizar(entrada_) {
-
-    // Normaliza cualquier entrada al rango [0,1] para un procesamiento homogéneo
+    // Normaliza la entrada al rango [0,1]
     this.mapeada[this.puntero] = map(entrada_, this.minimo, this.maximo, 0.0, 1.0);
     this.mapeada[this.puntero] = constrain(this.mapeada[this.puntero], 0.0, 1.0);
 
-    // Filtro paso bajo: reduce variación rápida de muestra a muestra
+    // Filtro paso bajo para suavizar las variaciones bruscas del audio
     this.filtrada = this.filtrada * this.f + this.mapeada[this.puntero] * (1 - this.f);
     this.histFiltrada[this.puntero] = this.filtrada;
 
-    // Derivada amplificada para hacer visibles cambios pequeños en pantalla
+    // Calcula la diferencia con la muestra anterior para detectar cambios rápidos
     this.derivada = (this.filtrada - this.anterior) * this.amplificadorDerivada;
     this.histDerivada[this.puntero] = this.derivada;
 
     this.anterior = this.filtrada;
-
     this.puntero++;
     
-    // Recorre el historial como buffer circular de longitud fija
+    // Buffer circular: cuando llega al ancho máximo, vuelve a empezar desde cero
     if (this.puntero >= anchoGestor) {
       this.puntero = 0;			
     }
@@ -55,7 +51,6 @@ class GestorSenial {
   }
 
   dibujar(x_, y_, g = null) {
-
     const pg = g || window;
 
     pg.push();
@@ -64,14 +59,14 @@ class GestorSenial {
     pg.rect(x_, y_, anchoGestor, altoGestor);
 
     for (let i = 1; i < this.cargado; i++) {
-      // Traza blanca: señal original mapeada
+      // Línea blanca: señal original mapeada
       let altura1 = map(this.mapeada[i-1], 0.0, 1.0, y_ + altoGestor, y_);
       let altura2 = map(this.mapeada[i], 0.0, 1.0, y_ + altoGestor, y_);
 
       pg.stroke(255);
       pg.line(x_ + i - 1, altura1, x_ + i, altura2);
 
-      // Traza verde: versión suavizada para lectura más estable
+      // Línea verde: señal suavizada por el filtro
       altura1 = map(this.histFiltrada[i-1], 0.0, 1.0, y_ + altoGestor, y_);
       altura2 = map(this.histFiltrada[i], 0.0, 1.0, y_ + altoGestor, y_);
 
@@ -79,7 +74,7 @@ class GestorSenial {
       pg.line(x_ + i - 1, altura1, x_ + i, altura2);
 
       if (this.dibujarDerivada) {
-        // Traza amarilla: cambios bruscos de la señal (derivada)
+        // Línea amarilla: velocidad de cambio de la señal
         altura1 = map(this.histDerivada[i-1], -1.0, 1.0, y_ + altoGestor, y_);
         altura2 = map(this.histDerivada[i], -1.0, 1.0, y_ + altoGestor, y_);
 
@@ -87,6 +82,7 @@ class GestorSenial {
         pg.line(x_ + i - 1, altura1, x_ + i, altura2);	
       }
     }
+    // Línea roja indicadora de la posición actual del buffer
     pg.stroke(255, 0, 0);
     pg.line(x_ + this.puntero, y_, x_ + this.puntero, y_ + altoGestor);
     pg.pop();

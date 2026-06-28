@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Delauney Generator - Matriz Interactiva</title>
+    <title>Delaunay Generator - Lienzo Interactivo</title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
@@ -11,13 +11,43 @@
     <link rel="stylesheet" type="text/css" href="styles.css" />
   </head>
   <body>
+    
+    <div id="welcome-screen">
+      <div class="welcome-content">
+        <h2>Delaunay Generator</h2>
+        <p class="welcome-intro">
+          Delaunay Generator es una obra interactiva inspirada en las obras de <strong>Sonia Delaunay</strong>, donde podrás crear tu propia composición visual usando tu voz. Antes de avanzar, asegurate de tener un micrófono funcionando.
+        </p>
+        
+        <div class="welcome-guide-box">
+          <h3>INSTRUCCIONES:</h3>
+          <ul style="margin-bottom: 18px;">
+            <li><span>🎙️ Voz / Canto:</span> Emití sonidos continuos para expandir y modular el pincel activo en pantalla.</li>
+            <li><span>👏 Una Palma:</span> Confirmás el valor actual y avanzás al siguiente paso de la obra.</li>
+            <li><span>👏👏 Doble Palma:</span> Retrocedés un paso si te equivocaste o querés reajustar una capa anterior.</li>
+            <li><span>⏱️ 10s de Silencio:</span> Guarda automáticamente un PNG limpio de tu obra (Modo Exposición).</li>
+          </ul>
+
+          <h3>🎛️ Calibración Rápida (Panel Derecho):</h3>
+          <ul style="margin-bottom: 18px;">
+            <li><span style="color: #fe3f2c;">🎙️ Nivel de Entrada:</span> Ajusta la ganancia general según la potencia de tu micrófono.</li>
+            <li><span style="color: #fe3f2c;">🛑 Filtro de Ruido:</span> Sube el umbral para aislar ruidos molestos o estática de la sala.</li>
+          </ul>
+
+          <div style="font-size: 11px; color: #777; border-top: 1px solid #252525; padding-top: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+            * Control de emergencia por teclado: <strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px; font-size: 10px;">Espacio</strong> Avanzar | <strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px; font-size: 10px;">B</strong> Retroceder | <strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px; font-size: 10px;">R</strong> Reiniciar
+          </div>
+        </div>
+        
+        <button id="btnComenzarPerfo">COMENZAR</button>
+      </div>
+    </div>
+
     <div id="app-container">
-      
       <header id="main-header">
-        <h2>Delauney Generator</h2>
-        <p class="conceptual-text">
-          Un lienzo interactivo inspirado en <strong>Sonia Delaunay</strong>. 
-          Modulá de forma cíclica los parámetros con la intensidad de tu voz y usá palmas para viajar infinitamente por las capas.
+        <h2>Delaunay Generator</h2>
+        <p class="conceptual-text" id="htmlTextoInstruccion">
+          Cargando instrucciones de performance...
         </p>
         
         <div id="estado-perfo" style="font-size: 13px; font-weight: bold; color: #c4a85a; letter-spacing: 1px; text-transform: uppercase; margin-top: 15px; background: #1c1c1c; padding: 6px 20px; border-radius: 20px; display: inline-block; border: 1px solid #333;">
@@ -27,52 +57,76 @@
 
       <div id="main-content-layout">
         
-        <main id="canvas-holder"></main>
+        <div class="canvas-column">
+          <main id="canvas-holder"></main>
+          
+          <div id="performance-manual-horizontal">
+            <span class="manual-title">CONTROLES</span>
+            <div class="manual-grid">
+              <div class="manual-item">
+                <strong class="tag-badge">Intensidad Voz 🎙️</strong>
+                <p>Sube el slider dinámico activo de forma toroidal.</p>
+              </div>
+              <div class="manual-item">
+                <strong class="tag-badge">Silencio 🛑</strong>
+                <p>Freno de mano instantáneo (Conserva el valor).</p>
+              </div>
+              <div class="manual-item">
+                <strong class="tag-badge">Una Palma 👏</strong>
+                <p>Avanzar paso secuencial (Suena ok.wav).</p>
+              </div>
+              <div class="manual-item">
+                <strong class="tag-badge">Doble Palma 👏👏</strong>
+                <p>Retroceder al estado anterior (Suena back.wav).</p>
+              </div>
+            </div>
+            <div class="manual-footer-keys">
+              * Navegación manual de emergencia por teclado: <span class="key-pill">Espacio</span> Avanzar | <span class="key-pill">B</span> Retroceder | <span class="key-pill">R</span> Reiniciar
+            </div>
+          </div>
+        </div>
 
         <aside id="gui-panel">
+          <h3>Entorno Acústico</h3>
+          <div class="control-group" style="margin-bottom: 12px; padding-bottom: 8px;">
+            <label style="color: #c4a85a; font-weight: bold;">🎙️ Nivel de Entrada Micrófono</label>
+            <input type="range" id="htmlSliderSensibilidad" min="1" max="20" step="1" value="14" />
+          </div>
           
-     <h3>Entorno Acústico</h3>
-<div class="control-group" style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #333;">
-  <label style="color: #c4a85a; font-weight: bold;">🎙️ Nivel de Entrada Micrófono</label>
-<input type="range" id="htmlSliderSensibilidad" min="1" max="20" step="1" value="14" /></div>
+          <div class="control-group" style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #333;">
+            <label style="color: #fe3f2c; font-weight: bold;">🛑 Filtro Ruido Ambiente (Umbral)</label>
+            <input type="range" id="htmlSliderUmbral" min="0.01" max="0.30" step="0.01" value="0.08" />
+          </div>
 
           <h3>Pinceles Estructurales</h3>
-
           <div class="control-group">
             <label>1. Cantidad de núcleos</label>
             <input type="range" id="htmlSliderCantidad" min="0" max="5" value="0" step="1" />
           </div>
-
           <div class="control-group">
             <label>2. Escala General</label>
             <input type="range" id="htmlSliderEscala" min="100" max="400" value="100" step="1" />
           </div>
-
           <div class="control-group">
             <label>3. Figuras Intermedias</label>
             <input type="range" id="htmlSliderSecundarias" min="0" max="6" step="1" value="0" />
           </div>
-
           <div class="control-group">
             <label>4. Paleta Cromática</label>
             <input type="range" id="htmlSliderPaleta" min="0" max="3" value="0" step="1" />
           </div>
-
-<div class="control-group">
-  <label>5. Estructura de Fondo</label>
-  <input type="range" id="htmlSliderFondo" min="0" max="5" value="0" step="1" />
-</div>
-
+          <div class="control-group">
+            <label>5. Estructura de Fondo</label>
+            <input type="range" id="htmlSliderFondo" min="0" max="5" value="0" step="1" />
+          </div>
           <div class="control-group">
             <label>6. Amplitud Sinusoide (S)</label>
             <input type="range" id="htmlSliderSinusoide" min="0" max="100" value="0" step="1" />
           </div>
-
           <div class="control-group">
             <label>7. Tramas de Fondo</label>
             <input type="range" id="htmlSliderTramasFondo" min="0" max="35" step="1" value="0" />
           </div>
-
           <div class="control-group">
             <label>8. Offset Eje (Asimetría)</label>
             <input type="range" id="htmlSliderOffset" min="0" max="150" value="0" step="1" />
@@ -86,17 +140,6 @@
           <div id="palette-preview-block" style="display: none; margin-top: 25px">
             <span id="palette-label" style="display: block; font-size: 11px; color: #888; letter-spacing: 0.5px; margin-bottom: 8px; text-transform: uppercase;">Paleta actual:</span>
             <div id="palette-bar-container"></div>
-          </div>
-
-          <div id="keyboard-guide" style="margin-top: 25px; padding-top: 15px; border-top: 1px dashed #3a3a3a;">
-            <span style="display: block; font-size: 11px; color: #888; letter-spacing: 0.5px; margin-bottom: 10px; text-transform: uppercase;">Manual de Performance:</span>
-            <ul style="list-style: none; font-size: 11px; color: #c4a85a; line-height: 1.6; text-transform: uppercase; padding-left: 0;">
-              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">Intensidad Voz 🎙️</strong> Sube el slider activo. Al pasar el máximo, vuelve a nacer de 0</li>
-              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">Silencio 🛑</strong> Freno de mano instantáneo (Conserva el valor actual)</li>
-              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">Una Palma 👏</strong> Confirmar y avanzar paso (Suena ok.wav - Cíclico del 8 al 1)</li>
-              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">Doble Palma 👏👏</strong> Retroceder paso (Suena back.wav - Cíclico del 1 al 8)</li>
-              <li><strong style="color: #fff; background: #333; padding: 1px 4px; border-radius: 3px;">Espacio / B</strong> Navegación manual de emergencia por teclado</li>
-            </ul>
           </div>
         </aside>
       </div>

@@ -23,7 +23,7 @@ body {
    ========================================================================== */
 #app-container {
   display: flex;
-  flex-direction: column; /* Flujo vertical: cabecera arriba, contenido abajo */
+  flex-direction: column; 
   align-items: center;
   width: 100%;
   max-width: 1100px;
@@ -34,7 +34,6 @@ body {
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
 }
 
-/* Cabecera Superior Centrada */
 #main-header {
   text-align: center;
   width: 100%;
@@ -49,12 +48,11 @@ body {
   margin-bottom: 8px;
 }
 
-/* Texto Introductorio Conceptual */
 .conceptual-text {
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.6;
   color: #a0a0a0;
-  max-width: 600px;
+  max-width: 700px;
   margin: 0 auto;
   text-align: center;
   letter-spacing: 0.2px;
@@ -65,21 +63,32 @@ body {
   font-weight: 600;
 }
 
-/* Distribución en Fila para Lienzo + Controles */
 #main-content-layout {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 30px;
   width: 100%;
 }
 
-/* Responsivo Adaptable para Pantallas Chicas o Celulares */
+/* Columna que contiene el Lienzo y su manual inferior */
+.canvas-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
+  width: 600px; /* Sincronizado con el ancho del canvas */
+}
+
 @media (max-width: 1000px) {
   #main-content-layout {
     flex-direction: column;
     align-items: center;
+  }
+  .canvas-column {
+    width: 100%;
+    max-width: 600px;
   }
 }
 
@@ -90,7 +99,7 @@ body {
   border-radius: 6px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   display: block;
-  max-width: 100%; /* Permite achicarse en pantallas de menor resolución */
+  max-width: 100%;
   height: auto !important; 
 }
 
@@ -98,12 +107,12 @@ body {
    4. PANEL DE CONTROL LATERAL (GUI)
    ========================================================================== */
 #gui-panel {
-  width: 320px;
+  width: 340px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: space-between;
   background-color: #1c1c1c;
-  padding: 20px;
+  padding: 22px;
   border-radius: 8px;
   border: 1px solid #333;
 }
@@ -119,21 +128,19 @@ body {
   padding-bottom: 8px;
 }
 
-/* Grupo de Deslizadores */
 .control-group {
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .control-group label {
   display: block;
-  font-size: 11px;
+  font-size: 10px;
   color: #c4a85a;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
 }
 
-/* Estilizado del Input Range (Sliders con botón rojo nativo de la obra) */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
@@ -176,7 +183,6 @@ input[type="range"]::-webkit-slider-thumb {
   transition: all 0.2s ease;
 }
 
-/* Botón Sólido: Nueva Obra */
 #btnGenerar {
   background-color: #c4a85a;
   color: #111;
@@ -187,7 +193,6 @@ input[type="range"]::-webkit-slider-thumb {
   background-color: #e5c46e;
 }
 
-/* Botón Outline: Guardar PNG */
 .btn-outline {
   background-color: transparent;
   color: #ffffff;
@@ -217,4 +222,197 @@ input[type="range"]::-webkit-slider-thumb {
   flex: 1;
   height: 100%;
   transition: background-color 0.2s ease;
+}
+
+/* ==========================================================================
+   7. PANTALLA DE BIENVENIDA INTERACTIVA (SPLASH SCREEN)
+   ========================================================================== */
+#welcome-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(17, 17, 17, 0.98);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.welcome-content h2 {
+  font-size: 32px;
+  color: #ffffff;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 15px;
+}
+
+.welcome-intro {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #b0b0b0;
+  margin-bottom: 25px;
+}
+
+.welcome-intro strong {
+  color: #c4a85a;
+}
+
+.welcome-guide-box span {
+  color: #c4a85a;
+  font-weight: bold;
+}
+
+#btnComenzarPerfo {
+  background-color: #fe3f2c;
+  color: #ffffff;
+  border: none;
+  padding: 15px 40px;
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+#btnComenzarPerfo:hover {
+  background-color: #ff5747;
+  transform: scale(1.01);
+  box-shadow: 0 4px 15px rgba(254, 63, 44, 0.4);
+}
+
+#welcome-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* ==========================================================================
+   8. NUEVO: MANUAL DE PERFORMANCE HORIZONTAL (MÓDULO DEBAJO DEL CANVAS)
+   ========================================================================== */
+#performance-manual-horizontal {
+  background-color: #1c1c1c;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 18px;
+  width: 100%;
+}
+
+.manual-title {
+  display: block;
+  font-size: 11px;
+  color: #888;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  border-bottom: 1px dashed #333;
+  padding-bottom: 6px;
+  font-weight: bold;
+}
+
+/* Grilla de 4 columnas perfectas para los comandos principales */
+.manual-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 600px) {
+  .manual-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.manual-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tag-badge {
+  font-size: 10px;
+  color: #ffffff;
+  background-color: #2e2e2e;
+  padding: 3px 6px;
+  border-radius: 4px;
+  display: inline-block;
+  width: fit-content;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.manual-item p {
+  font-size: 11px;
+  line-height: 1.4;
+  color: #c4a85a;
+}
+
+/* Fila inferior para los controles de teclado secundarios */
+.manual-footer-keys {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #252525;
+  font-size: 10px;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.key-pill {
+  color: #fff;
+  background-color: #333;
+}
+
+
+/* 1. Expandimos el ancho del cuadro de contenido para dar más espacio horizontal */
+.welcome-content {
+  width: 90%;
+  max-width: 800px; /* 🔥 CAMBIO: Antes solía ser de 500px o 600px. Al estirarlo a 800px, el texto "respira" */
+  background: #111111;
+  padding: 30px 40px;
+  border-radius: 12px;
+  border: 1px solid #222;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  text-align: center;
+}
+
+/* 2. Removemos el límite de altura rígido y el scroll del cuadro de instrucciones */
+.welcome-guide-box {
+  max-height: none !important; /* 🔥 CAMBIO: Eliminamos el techo de altura */
+  overflow-y: visible !important; /* 🔥 CAMBIO: Forzamos a que desaparezca la barra de scroll */
+  text-align: left;
+  margin-top: 20px;
+  margin-bottom: 25px;
+  background: #161616;
+  padding: 20px 25px;
+  border-radius: 6px;
+  border: 1px solid #222;
+}
+
+/* 3. Ajustamos el interlineado y márgenes de las listas para compactar el alto general */
+.welcome-guide-box ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.welcome-guide-box li {
+  font-size: 13px;
+  line-height: 1.4;
+  margin-bottom: 10px; /* 🔥 CAMBIO: Un pelín más compacto para asegurar que no toque los bordes del monitor */
+  color: #ccc;
+}
+
+.welcome-guide-box h3 {
+  font-size: 14px;
+  color: #c4a85a;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 15px;
+  margin-bottom: 10px;
 }
