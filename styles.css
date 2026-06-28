@@ -415,4 +415,37 @@ input[type="range"]::-webkit-slider-thumb {
   letter-spacing: 1px;
   margin-top: 15px;
   margin-bottom: 10px;
+
+/* ==========================================================================
+   9. AJUSTE RESPONSIVO PARA PANTALLA DE BIENVENIDA (MÓVIL)
+   ========================================================================== */
+@media (max-width: 600px) {
+  .welcome-content {
+    width: 95% !important;
+    padding: 20px 15px !important; /* Achicamos el colchón interno para ganar espacio */
+  }
+
+  .welcome-content h2 {
+    font-size: 24px !important; /* Título un poco más chico para que no quiebre feo */
+  }
+
+  .welcome-guide-box {
+    padding: 15px 15px !important;
+    margin-top: 15px !important;
+    margin-bottom: 15px !important;
+  }
+
+  .welcome-guide-box li {
+    font-size: 12px !important; /* Texto de instrucciones más compacto */
+    line-height: 1.5 !important;
+  }
+
+  #btnComenzarPerfo {
+    padding: 12px 20px !important;
+    font-size: 12px !important
+     ;
+  }
+}
+
+   
 }
