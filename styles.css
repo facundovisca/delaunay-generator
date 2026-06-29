@@ -418,31 +418,54 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 /* ==========================================================================
-   9. AJUSTE RESPONSIVO PARA PANTALLA DE BIENVENIDA (MÓVIL)
+   9. AJUSTE RESPONSIVO CRÍTICO PARA PANTALLA DE BIENVENIDA (MÓVIL)
    ========================================================================== */
 @media (max-width: 600px) {
+  #welcome-screen {
+    align-items: flex-start !important; /* Alinea arriba para que si hay scroll se pueda bajar */
+    overflow-y: auto !important;        /* Permite scroll vertical interno si la pantalla es muy enana */
+    padding: 10px !important;
+  }
+
   .welcome-content {
-    width: 95% !important;
-    padding: 20px 15px !important; /* Achicamos el colchón interno para ganar espacio */
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 15px 15px !important;    /* Reducimos al mínimo el colchón interno */
+    margin: 10px 0 !important;
   }
 
   .welcome-content h2 {
-    font-size: 24px !important; /* Título un poco más chico para que no quiebre feo */
+    font-size: 22px !important;       /* Título más compacto */
+    margin-bottom: 8px !important;
+  }
+
+  .welcome-intro {
+    font-size: 12px !important;       /* Texto de introducción más chico */
+    line-height: 1.4 !important;
+    margin-bottom: 12px !important;
   }
 
   .welcome-guide-box {
-    padding: 15px 15px !important;
-    margin-top: 15px !important;
+    padding: 12px 15px !important;    /* Ajuste de la caja de comandos */
+    margin-top: 10px !important;
     margin-bottom: 15px !important;
   }
 
+  .welcome-guide-box h3 {
+    font-size: 12px !important;
+    margin-top: 8px !important;
+    margin-bottom: 6px !important;
+  }
+
   .welcome-guide-box li {
-    font-size: 12px !important; /* Texto de instrucciones más compacto */
-    line-height: 1.5 !important;
+    font-size: 11px !important;       /* Lista súper compacta para ahorrar altura */
+    line-height: 1.4 !important;
+    margin-bottom: 6px !important;
   }
 
   #btnComenzarPerfo {
     padding: 12px 20px !important;
     font-size: 12px !important;
+    margin-top: 5px !important;
   }
 }
