@@ -415,6 +415,7 @@ input[type="range"]::-webkit-slider-thumb {
   letter-spacing: 1px;
   margin-top: 15px;
   margin-bottom: 10px;
+}
 
 /* ==========================================================================
    9. AJUSTE RESPONSIVO PARA PANTALLA DE BIENVENIDA (MÓVIL)
@@ -442,10 +443,6 @@ input[type="range"]::-webkit-slider-thumb {
 
   #btnComenzarPerfo {
     padding: 12px 20px !important;
-    font-size: 12px !important
-     ;
+    font-size: 12px !important;
   }
-}
-
-   
 }
