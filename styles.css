@@ -416,56 +416,58 @@ input[type="range"]::-webkit-slider-thumb {
   margin-top: 15px;
   margin-bottom: 10px;
 }
-
 /* ==========================================================================
-   9. AJUSTE RESPONSIVO CRÍTICO PARA PANTALLA DE BIENVENIDA (MÓVIL)
+   9. AJUSTE RESPONSIVO CRÍTICO PARA PANTALLA DE BIENVENIDA (MÓVIL / IOS)
    ========================================================================== */
 @media (max-width: 600px) {
   #welcome-screen {
-    align-items: flex-start !important; /* Alinea arriba para que si hay scroll se pueda bajar */
-    overflow-y: auto !important;        /* Permite scroll vertical interno si la pantalla es muy enana */
+    position: absolute !important;     /* 🔥 CAMBIO CLAVE: Permite que el fondo acompañe el scroll real del iPhone */
+    height: auto !important;           /* 🔥 CAMBIO CLAVE: Rompe el bloqueo rígido de pantalla del vh */
+    min-height: 100vh !important;
+    align-items: flex-start !important; 
+    overflow-y: initial !important;    /* Le delegamos el scroll al cuerpo general de la página */
     padding: 10px !important;
   }
 
   .welcome-content {
     width: 100% !important;
     max-width: 100% !important;
-    padding: 15px 15px !important;    /* Reducimos al mínimo el colchón interno */
-    margin: 10px 0 !important;
+    padding: 15px 15px !important;    
+    margin: 10px 0 20px 0 !important;  /* Le damos un aire abajo para que el botón respire en Safari */
   }
 
   .welcome-content h2 {
-    font-size: 16px !important;       /* Título más compacto */
+    font-size: 22px !important;       
     margin-bottom: 8px !important;
   }
 
   .welcome-intro {
-    font-size: 10px !important;       /* Texto de introducción más chico */
+    font-size: 12px !important;       
     line-height: 1.4 !important;
-    margin-bottom: 10px !important;
+    margin-bottom: 12px !important;
   }
 
   .welcome-guide-box {
-    padding: 12px 15px !important;    /* Ajuste de la caja de comandos */
+    padding: 12px 15px !important;    
     margin-top: 10px !important;
     margin-bottom: 15px !important;
   }
 
   .welcome-guide-box h3 {
-    font-size: 10px !important;
+    font-size: 12px !important;
     margin-top: 8px !important;
     margin-bottom: 6px !important;
   }
 
   .welcome-guide-box li {
-    font-size: 9px !important;       /* Lista súper compacta para ahorrar altura */
+    font-size: 11px !important;       
     line-height: 1.4 !important;
     margin-bottom: 6px !important;
   }
 
   #btnComenzarPerfo {
-    padding: 12px 20px !important;
-    font-size: 10px !important;
+    padding: 14px 20px !important;    /* Un toque más gordo para que sea fácil de clavar con el pulgar */
+    font-size: 13px !important;
     margin-top: 5px !important;
   }
 }
