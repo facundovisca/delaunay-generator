@@ -435,14 +435,14 @@ input[type="range"]::-webkit-slider-thumb {
   }
 
   .welcome-content h2 {
-    font-size: 22px !important;       /* Título más compacto */
+    font-size: 16px !important;       /* Título más compacto */
     margin-bottom: 8px !important;
   }
 
   .welcome-intro {
-    font-size: 12px !important;       /* Texto de introducción más chico */
+    font-size: 10px !important;       /* Texto de introducción más chico */
     line-height: 1.4 !important;
-    margin-bottom: 12px !important;
+    margin-bottom: 10px !important;
   }
 
   .welcome-guide-box {
@@ -452,20 +452,20 @@ input[type="range"]::-webkit-slider-thumb {
   }
 
   .welcome-guide-box h3 {
-    font-size: 12px !important;
+    font-size: 10px !important;
     margin-top: 8px !important;
     margin-bottom: 6px !important;
   }
 
   .welcome-guide-box li {
-    font-size: 11px !important;       /* Lista súper compacta para ahorrar altura */
+    font-size: 9px !important;       /* Lista súper compacta para ahorrar altura */
     line-height: 1.4 !important;
     margin-bottom: 6px !important;
   }
 
   #btnComenzarPerfo {
     padding: 12px 20px !important;
-    font-size: 12px !important;
+    font-size: 10px !important;
     margin-top: 5px !important;
   }
 }
